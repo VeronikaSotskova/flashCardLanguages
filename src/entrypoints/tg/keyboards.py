@@ -30,10 +30,19 @@ def create_card_actions_keyboard(current_method: str = '') -> types.InlineKeyboa
 
 
 def create_pagination_keyboard(data: PagedResponseSchema):
-    builder = InlineKeyboardBuilder()
+    pagination_buttons = []
     if data.has_prev:
-        builder.button(text='<-- Назад', callback_data=f'card_page:{data.page-1}')
-    builder.button(text=f'{data.page}/{data.page_count}', callback_data=f'card_page:{data.page}')
+        pagination_buttons.append(types.InlineKeyboardButton(text='<-- Назад', callback_data=f'card_page:{data.page-1}'))
+    pagination_buttons.append(types.InlineKeyboardButton(text=f'{data.page}/{data.page_count}', callback_data=f'card_page:{data.page}'))
     if data.has_next:
-        builder.button(text='Вперед -->', callback_data=f'card_page:{data.page+1}')
-    return builder.as_markup()
+        pagination_buttons.append(types.InlineKeyboardButton(text='Вперед -->', callback_data=f'card_page:{data.page+1}'))
+    action_buttons = [
+        types.InlineKeyboardButton(text='Редактировать описание', callback_data=f'edit_example:{data.results[0].id}'),
+        types.InlineKeyboardButton(text='Удалить', callback_data=f'delete_card:{data.results[0].id}'),
+    ]
+    return types.InlineKeyboardMarkup(
+        inline_keyboard=[
+            pagination_buttons,
+            action_buttons
+        ]
+    )
